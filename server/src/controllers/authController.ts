@@ -7,6 +7,14 @@ interface LoginRequest {
     password: string;
 }
 
+type Role = 'user' | 'admin';
+
+interface RegisterRequest {
+    name: string;
+    password: string;
+    role: Role | undefined;
+}
+
 export const loginController = async (req: Request<{}, {}, LoginRequest>, res: Response): Promise<void> => {
     const { name, password } = req.body;
 
@@ -38,11 +46,11 @@ export const loginController = async (req: Request<{}, {}, LoginRequest>, res: R
     }
 }
 
-export const registerController = async (req: Request, res: Response): Promise<void> => {
+export const registerController = async (req: Request<{}, {}, RegisterRequest>, res: Response): Promise<void> => {
     const { name, password, role } = req.body;
 
     try {
-        const user = await register(name, password, role);
+        const user = await register(name, password, role || 'user');
         res.status(201).json({
             success: true,
             message: 'Registration successful',
