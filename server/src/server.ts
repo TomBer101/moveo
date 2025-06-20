@@ -8,7 +8,7 @@ import { sessionConfig } from './lib/sessions/config';
 
 import authRoutes from './routes/auth';
 import tagsRoutes from './routes/tagsRoute';
-
+import callsRoutes from './routes/callsRoute';
 dotenv.config();
 
 
@@ -20,7 +20,7 @@ app.use(session(sessionConfig));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tags', tagsRoutes);
-
+app.use('/api/calls', callsRoutes);
 
 const startServer = async (): Promise<void> => {
   try {

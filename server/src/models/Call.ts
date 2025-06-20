@@ -3,16 +3,17 @@ import { ITask } from './Task';
 import { ITag } from './Tag';
 
 export interface ICall extends Document {
-    title: string;
+    name: string;
     tasks: mongoose.Types.ObjectId[] | ITask[];
     tags: mongoose.Types.ObjectId[] | ITag[];
 }
 
 const callSchema = new Schema({
-    title: {
+    name: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        unique: true
     },
     tasks: [{
         type: Schema.Types.ObjectId,
