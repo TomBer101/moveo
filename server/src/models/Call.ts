@@ -1,28 +1,25 @@
-import mongoose, { Document, Schema } from 'mongoose';
-import { ITask } from './Task';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 import { ITag } from './Tag';
+import { CallTaskSchema, ICallTask } from './CallTask';
 
 export interface ICall extends Document {
     name: string;
-    tasks: mongoose.Types.ObjectId[] | ITask[];
-    tags: mongoose.Types.ObjectId[] | ITag[];
+    tasks: ICallTask[];
+    tags: Types.ObjectId[] | ITag[];
 }
 
-const callSchema = new Schema({
+const callSchema = new Schema<ICall>({
     name: {
         type: String,
         required: true,
         trim: true,
         unique: true
     },
-    tasks: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Task'
-    }],
+    tasks: [CallTaskSchema],
     tags: [{
         type: Schema.Types.ObjectId,
-        ref: 'Tag'
-    }]
+        ref: 'Tag',
+        }]
 });
 
 export const Call = mongoose.model<ICall>('Call', callSchema);
