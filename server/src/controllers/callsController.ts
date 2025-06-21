@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { addTagToCall, addTaskToCall, createCall, getCalls } from '../services/callsService';
+import { addTagToCall, addTaskToCall, createCall, getCalls, updateTaskStatus } from '../services/callsService';
 import { CustomError } from '../classes/CustomError';
 import { ICall } from '@/models/Call';
+import { TaskStatus } from '../models/CallTask';
 
 interface CreateCallRequest {
     name: string;
@@ -18,6 +19,15 @@ interface AddTaskToCallRequest {
 
 interface UpdateCallParams {
     callId: string;
+}
+
+interface UpdateTaskStatusRequest {
+    status: TaskStatus;
+}
+
+interface UpdateTaskParams {
+    callId: string;
+    taskId: string;
 }
 
 export const createCallController = async (req: Request<{}, {}, CreateCallRequest>, res: Response): Promise<void> => {
@@ -81,6 +91,22 @@ export const getCallsController = async (req: Request, res: Response): Promise<v
         res.status(200).json(calls);
     } catch (error: any) {
         if (error.name === 'CustomError') { 
+            res.status(error.code).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+}
+
+export const updateTaskStatusController = async (req: Request<UpdateTaskParams, {}, UpdateTaskStatusRequest>, res: Response): Promise<void> => {
+    const { callId, taskId } = req.params;
+    const { status } = req.body;
+
+    try {
+        const call = await updateTaskStatus(callId, taskId, status);
+        res.status(200).json(call);
+    } catch (error: any) {
+        if (error.name === 'CustomError') {
             res.status(error.code).json({ error: error.message });
         } else {
             res.status(500).json({ error: 'Internal server error' });

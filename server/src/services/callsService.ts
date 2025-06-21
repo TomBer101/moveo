@@ -1,5 +1,6 @@
 import { Call, ICall } from '../models/Call';
 import { CustomError } from '../classes/CustomError';
+import { TaskStatus } from '../models/CallTask';
 import mongoose from 'mongoose';
 
 export const createCall = async (name: string): Promise<ICall> => {
@@ -77,4 +78,35 @@ export const addTaskToCall = async (callId: string, name: string): Promise<ICall
     console.error('Error adding task to call:', error);
     throw new CustomError('Internal server error: Failed to add task to call', 500);
    }
+}
+
+export const updateTaskStatus = async (callId: string, taskId: string, status: TaskStatus): Promise<ICall> => {
+    try {
+        // Validate status is a valid TaskStatus
+        const validStatuses: TaskStatus[] = ['open', 'in progress', 'completed'];
+        if (!validStatuses.includes(status)) {
+            throw new CustomError(`Invalid status. Must be one of: ${validStatuses.join(', ')}`, 400);
+        }
+
+        const call = await Call.findById(callId);
+        if (!call) {
+            throw new CustomError('Call not found', 404);
+        }
+
+        const task = call.tasks.find(task => task._id?.toString() === taskId);
+        if (!task) {
+            throw new CustomError('Task not found', 404);
+        }
+
+        // Update the task status
+        task.status = status;
+        await call.save();
+        
+        console.log(`Task status updated to: ${status}`);
+        return call;
+    } catch (error: any) {
+        if (error.name === 'CustomError') throw error;
+        console.error('Error updating task status:', error);
+        throw new CustomError('Internal server error: Failed to update task status', 500);
+    }
 }
