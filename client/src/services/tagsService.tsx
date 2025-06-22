@@ -20,3 +20,13 @@ export const createTag = async (name: string): Promise<ITag> => {
         throw error;
     }
 }
+
+export const updateTag = async (tagId: string, name: string): Promise<ITag> => {
+    try {
+        const response = await apiClient.put<ITag>(`/tags/${tagId}`, { name });
+        return response;
+    } catch (error) {
+        console.error('Error updating tag:', error);
+        throw error;
+    }
+}
