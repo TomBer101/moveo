@@ -11,6 +11,7 @@ const api = axios.create({
 export const apiClient = {
     get: <T>(url: string) => api.get<T>(url).then(res => res.data),
     post: <T, D = unknown>(url: string, data: D) => api.post<T>(url, data).then(res => res.data),
+    put: <T, D = unknown>(url: string, data: D) => api.put<T>(url, data).then(res => res.data),
 }
 
 export default api;
