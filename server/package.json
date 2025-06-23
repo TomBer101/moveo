@@ -8,7 +8,7 @@
     "dev:debug": "nodemon --exec ts-node --inspect src/server.ts",
     "dev:debug-brk": "nodemon --exec ts-node --inspect-brk src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/server.ts",
     "clean": "rm -rf dist",
     "test-setup": "node test-setup.js"
   },
@@ -17,12 +17,14 @@
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "connect-mongo": "^5.1.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "mongoose": "^8.0.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/express-session": "^1.18.2",
     "@types/node": "^24.0.3",

@@ -13,6 +13,7 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
+    "inlineSourceMap": false,
     "removeComments": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -40,6 +41,8 @@
   ],
   "ts-node": {
     "esm": false,
-    "experimentalSpecifierResolution": "node"
+    "experimentalSpecifierResolution": "node",
+    "transpileOnly": false,
+    "sourceMap": true
   }
 } 
