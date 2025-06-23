@@ -9,9 +9,18 @@ const api = axios.create({
 });
 
 export const apiClient = {
-    get: <T>(url: string) => api.get<T>(url).then(res => res.data),
-    post: <T, D = unknown>(url: string, data: D) => api.post<T>(url, data).then(res => res.data),
-    put: <T, D = unknown>(url: string, data: D) => api.put<T>(url, data).then(res => res.data),
+    get: async <T>(url: string) => {
+        const res = await api.get<T>(url);
+        return res.data;
+    },
+    post: async <T, D = unknown, P = Record<string, string>>(url: string, data?: D, params?: P) => {
+        const res = await api.post<T>(url, data, { params });
+        return res.data;
+    },
+    put: async <T, D = unknown>(url: string, data: D) => {
+        const res = await api.put<T>(url, data);
+        return res.data;
+    },
 }
 
 export default api;
