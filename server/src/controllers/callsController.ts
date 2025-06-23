@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { addTagToCall, addTaskToCall, createCall, getCalls, updateTaskStatus } from '../services/callsService';
+import { addTagToCall, addTaskToCall, addSuggestedTaskToCall, createCall, getCalls, getCallsWithSuggestedTasks, updateTaskStatus } from '../services/callsService';
 import { CustomError } from '../classes/CustomError';
 import { ICall } from '@/models/Call';
 import { TaskStatus } from '../models/CallTask';
@@ -68,7 +68,7 @@ export const addTaskToCallController = async (req: Request<UpdateCallParams, {},
     try {
         let result: ICall;
         if (suggestedTaskId) {
-            result = await addTaskToCall(callId, suggestedTaskId);
+            result = await addSuggestedTaskToCall(callId, suggestedTaskId);
         } else if (name) {
             result = await addTaskToCall(callId, name);
         } else {
@@ -88,6 +88,19 @@ export const addTaskToCallController = async (req: Request<UpdateCallParams, {},
 export const getCallsController = async (req: Request, res: Response): Promise<void> => {
     try {
         const calls = await getCalls();
+        res.status(200).json(calls);
+    } catch (error: any) {
+        if (error.name === 'CustomError') { 
+            res.status(error.code).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+}
+
+export const getCallsWithSuggestedTasksController = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const calls = await getCallsWithSuggestedTasks();
         res.status(200).json(calls);
     } catch (error: any) {
         if (error.name === 'CustomError') { 

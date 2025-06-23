@@ -1,6 +1,7 @@
 import { Call, ICall } from '../models/Call';
 import { CustomError } from '../classes/CustomError';
 import { TaskStatus } from '../models/CallTask';
+import { SuggestedTask } from '../models/SuggestedTask';
 import mongoose from 'mongoose';
 
 export const createCall = async (name: string): Promise<ICall> => {
@@ -19,10 +20,42 @@ export const createCall = async (name: string): Promise<ICall> => {
 
 export const getCalls = async (): Promise<ICall[]> => {
     try {
-        return Call.find();
-    } catch (error) {
+        
+            return Call.find()
+        }
+
+     catch (error) {
         console.error('Error getting calls:', error);
         throw new CustomError('Internal server error: Failed to get calls', 500);
+    }
+}
+
+export const getCallById = async (callId: string, populateSuggestedTasks: boolean = false): Promise<ICall | null> => {
+    try {
+        if (populateSuggestedTasks) {
+            return Call.findById(callId).populate({
+                path: 'tasks.suggestedTaskId',
+                model: 'SuggestedTask',
+                select: 'name tags'
+            });
+        }
+        return Call.findById(callId);
+    } catch (error) {
+        console.error('Error getting call by ID:', error);
+        throw new CustomError('Internal server error: Failed to get call', 500);
+    }
+}
+
+export const getCallsWithSuggestedTasks = async (): Promise<ICall[]> => {
+    try {
+        return Call.find().populate({
+            path: 'tasks.suggestedTaskId',
+            model: 'SuggestedTask',
+            select: 'name tags'
+        });
+    } catch (error) {
+        console.error('Error getting calls with suggested tasks:', error);
+        throw new CustomError('Internal server error: Failed to get calls with suggested tasks', 500);
     }
 }
 
@@ -30,6 +63,7 @@ export const addTagToCall = async (callId: string, tagIds: string[]): Promise<IC
     try {
         const call = await Call.findByIdAndUpdate(callId, 
             { $addToSet: { tags: { $each: tagIds } } }, 
+            {runValidators: true, new: true}
         );
         if (!call) {
             throw new CustomError('Call not found', 404);
@@ -78,6 +112,46 @@ export const addTaskToCall = async (callId: string, name: string): Promise<ICall
     console.error('Error adding task to call:', error);
     throw new CustomError('Internal server error: Failed to add task to call', 500);
    }
+}
+
+export const addSuggestedTaskToCall = async (callId: string, suggestedTaskId: string): Promise<ICall> => {
+    if (!suggestedTaskId) {
+        throw new CustomError('Suggested task ID is required', 400);
+    }
+
+    try {
+        const call = await Call.findById(callId);
+        if (!call) {
+            throw new CustomError('Call not found', 404);
+        }
+
+        // Validate that the suggested task exists
+        const suggestedTask = await SuggestedTask.findById(suggestedTaskId);
+        if (!suggestedTask) {
+            throw new CustomError('Suggested task not found', 404);
+        }
+
+        // Check if this suggested task is already added to the call
+        const taskExists = call.tasks.some(task => 
+            task.suggestedTaskId?.toString() === suggestedTaskId
+        );
+        if (taskExists) {
+            throw new CustomError('Suggested task already exists in this call', 400);
+        }
+
+        // Add the suggested task to the call
+        call.tasks.push({ 
+            suggestedTaskId: new mongoose.Types.ObjectId(suggestedTaskId),
+            status: 'open'
+        });
+
+        await call.save();
+        return call;
+    } catch (error: any) {
+        if (error.name === 'CustomError') throw error;
+        console.error('Error adding suggested task to call:', error);
+        throw new CustomError('Internal server error: Failed to add suggested task to call', 500);
+    }
 }
 
 export const updateTaskStatus = async (callId: string, taskId: string, status: TaskStatus): Promise<ICall> => {
