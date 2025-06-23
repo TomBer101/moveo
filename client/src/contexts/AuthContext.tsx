@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { login } from '../services/authService';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { IUser } from '../types';
 
 interface AuthContextType {
     user: IUser | null;
-    isAuthenticated: boolean;
     login: (name: string, password: string) => Promise<void>;
     logout: () => void;
 }
@@ -12,10 +12,10 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<IUser | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    //const [user, setUser] = useState<IUser | null>(null);
     const [error, setError] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [user, setUser] = useLocalStorage<IUser | null>('moveo-user', null);
 
     const handleLogin = async (name: string, password: string) => {
         try {
@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const response = await login({ name, password });
             if (response.success) {
                 setUser(response.user);
-                setIsAuthenticated(true);
             } else {
                 //throw new Error(response.message);
                 setError(response.message);
@@ -38,12 +37,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const handleLogout = () => {
         setUser(null);
-        setIsAuthenticated(false);
+        localStorage.removeItem('moveo-user');
     };
 
     const value = {
         user,
-        isAuthenticated,
         error,
         isLoading,
         login: handleLogin,
