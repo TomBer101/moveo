@@ -10,19 +10,27 @@ import { selectFetchCallsLoading, selectCallsError, selectCurrentCallId, selectC
 import CreateCallForm from '../components/calls/CreateCallForm';
 import Modal from '@mui/material/Modal';
 import { useAuth } from '../contexts/AuthContext';
-
+import { useNavigate } from 'react-router-dom';
 const UserPage = () => {
     const dispatch = useAppDispatch();
     const isLoading = useAppSelector(selectFetchCallsLoading);
     const error = useAppSelector(selectCallsError);
     const callId = useAppSelector(selectCurrentCallId);
     const call = useAppSelector(selectCallById(callId));
-    const {logout} = useAuth();
+    const {setUser} = useAuth();
     const [isCreatingCall, setIsCreatingCall] = useState<boolean>(false);
     const handleOpenForm = () => setIsCreatingCall(true);
     const handleCloseForm = () => setIsCreatingCall(false);
+    const navigate = useNavigate();
 
-
+    useEffect(() => {
+        console.log('user page');
+        setUser({
+            _id: '1',
+            name: 'user',
+            role: 'user'
+        })
+    }, [])
 
     useEffect(() => {
         dispatch(fetchCalls());
@@ -35,8 +43,8 @@ const UserPage = () => {
             <Box sx={{ height: '100%', padding: 2, boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
                 <Typography variant='h4' sx={{ mb: 2, width: 'fit-content' }}>User Page</Typography>
                 <button style={{marginBottom: '10px', display: 'inline', width: 'fit-content'}} onClick={() => {
-                logout();
-            }}>LogOut</button>
+                navigate('/admin');
+            }}>Switch To Admin</button>
                 <Box sx={{ display: 'flex', gap: 2, height: '100%', flex: 1 }}>
                     <Box sx={{ flex: 1 }}>
                         <CallsList onClick={handleOpenForm} />

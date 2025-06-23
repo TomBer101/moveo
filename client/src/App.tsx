@@ -1,8 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-// import { AuthProvider } from './contexts/AuthContext';
-import ProtectedRoute from './components/auth/ProtectedRoute';
-import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
 import UserPage from './pages/UserPage';
 import UnauthorizedPage from './pages/Unauthorized';
@@ -25,16 +22,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<LoginPage />} />
+        <Route path='/'  element={<Navigate to='/admin' replace />} />
         <Route path='/admin' element={    
-          <ProtectedRoute requiredRole='admin'>
             <AdminPage /> 
-          </ProtectedRoute>
         } />
         <Route path='/user' element={
-          <ProtectedRoute requiredRole='user'>
             <UserPage />
-          </ProtectedRoute>
         } />
         <Route path='unauthorized' element={<UnauthorizedPage />} />
       </Routes>

@@ -1,4 +1,4 @@
-import  {  useState } from 'react';
+import  {  useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import { useForm } from 'react-hook-form';
 import Box from '@mui/material/Box';
@@ -13,7 +13,7 @@ import CreateCallTaskForm from '../components/tasks/CreateCallTaskForm';
 import { selectAllTasks } from '../features/tasks/tasksSelector';
 import Task from '../components/tasks/Task';
 import { useAuth } from '../contexts/AuthContext';
-
+import { useNavigate } from 'react-router-dom';
 interface FormValues {
     tagName: string;
 }
@@ -24,10 +24,18 @@ const AdminPage = () => {
     const tasks = useAppSelector(selectAllTasks);
     const isLoading = useAppSelector(selectTagsLoading);
     const error = useAppSelector(selectTagsError);
-    const {logout} = useAuth();
-    
+    const {setUser} = useAuth();
+    const navigate = useNavigate();
     const [isCreatingTag, setIsCreatingTag] = useState<boolean>(false);
 
+    useEffect(() => {
+        console.log('admin page');
+        setUser({
+            _id: '1',
+            name: 'admin',
+            role: 'admin'
+        })
+    }, [])
 
     const { control, handleSubmit, reset } = useForm<FormValues>({
         defaultValues: {
@@ -61,8 +69,8 @@ const AdminPage = () => {
         }}>
             <Typography variant='h4' sx={{ mb: 2, width: 'fit-content' }}>Admin Page</Typography>
             <button style={{marginBottom: '10px', display: 'inline', width: 'fit-content'}} onClick={() => {
-                logout();
-            }}>LogOut</button>
+                navigate('/user');
+            }}>Switch To User</button>
             <div
                 style={{
                     display: 'flex',

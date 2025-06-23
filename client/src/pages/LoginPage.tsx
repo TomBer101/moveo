@@ -1,13 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
-import { getRoleBasedRedirect } from '../utils/navigationUtils';
 import { useAuth } from '../contexts/AuthContext';
 import FormInputText from '../components/form/FormInputText';
+import { useState } from 'react';
 
 
 interface LoginFormData {
@@ -17,8 +15,7 @@ interface LoginFormData {
 
 
 export default function LoginPage() {
-    const { login, user } = useAuth();
-    const navigate = useNavigate();
+    const { login } = useAuth();
     const [error, setError] = useState<string>('');
     const { control, handleSubmit} = useForm<LoginFormData>({
         defaultValues: {
@@ -27,12 +24,6 @@ export default function LoginPage() {
         }
     });
 
-    useEffect(() => {
-        if (user) {
-            const redirectPath = getRoleBasedRedirect(user.role);
-            navigate(redirectPath);
-        }
-    }, [user, navigate]);
 
     const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
         console.log(data);
