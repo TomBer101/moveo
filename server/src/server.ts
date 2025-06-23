@@ -1,5 +1,6 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import session from 'express-session';
+import cors from 'cors';
 import dotenv from 'dotenv';
 
 
@@ -9,18 +10,29 @@ import { sessionConfig } from './lib/sessions/config';
 import authRoutes from './routes/auth';
 import tagsRoutes from './routes/tagsRoute';
 import callsRoutes from './routes/callsRoute';
+import tasksRoutes from './routes/tasksRoute';
+
 dotenv.config();
 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(session(sessionConfig));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tags', tagsRoutes);
 app.use('/api/calls', callsRoutes);
+app.use('/api/tasks', tasksRoutes);
 
 const startServer = async (): Promise<void> => {
   try {
