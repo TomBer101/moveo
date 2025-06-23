@@ -1,42 +1,46 @@
 import React, { useState } from 'react';
-import { useTag } from '../../hooks/useTag';
 import type { ITag } from '../../types';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import CloseIcon from '@mui/icons-material/Close';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { updateTag } from '../../services/tagsService';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { selectTagById } from '../../features/tags/tagsSelector';
+import { updateTag } from '../../features/tags/tagsSlice';
 import { TextField } from '@mui/material';
 
 interface TagProps {
     _id: string;
+    allowEdit?: boolean;
 }
 
-const Tag = ({_id} : TagProps) => {
-    const tag : ITag | undefined = useTag(_id);
+const Tag = ({_id, allowEdit = true} : TagProps) => {
+    const tag : ITag | undefined = useAppSelector(selectTagById(_id));
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [newName, setNewName] = useState<string>(tag?.name || '');
-    const queryClient = useQueryClient();
 
-    const {mutate: updateTagMutation} = useMutation({
-        mutationFn: (name: string) => updateTag(_id, name),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tags'] });
-            setIsEditing(false);
-        },
-        onError: (error) => {
-            console.error('Error updating tag:', error);
-        },
-    })
+    const dispatch = useAppDispatch();
 
     if (!tag) {
         return null;
     }
+
+    const updateTagMutation = async () => {
+        setIsEditing(true);
+
+        try {
+            await dispatch(updateTag({id: _id, name: newName})).unwrap();
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error updating tag:', error);
+        }
+    }
+
     return (
-        <Box sx={{
+        <Box 
+        sx={{
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
@@ -49,14 +53,13 @@ const Tag = ({_id} : TagProps) => {
                 value={newName}
                 disabled={!isEditing}
                 onChange={(e) => setNewName(e.target.value)}
-                onBlur={() => setIsEditing(false)}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                         setIsEditing(false);
                     }
                 }}
             />
-            {isEditing ? (
+            {isEditing && allowEdit ? (
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -67,11 +70,11 @@ const Tag = ({_id} : TagProps) => {
                 <IconButton color='error' onClick={() => setIsEditing(false)}>
                     <CloseIcon />
                 </IconButton>
-                <IconButton color='success' onClick={() => updateTagMutation(newName)}>
+                <IconButton color='success' onClick={() => updateTagMutation()}>
                     <DoneOutlineIcon />
                 </IconButton>
                 </Box>
-            ) : (
+            ) : allowEdit && (
                 <IconButton onClick={() => setIsEditing(true)}>
                     <EditIcon />
                 </IconButton>
