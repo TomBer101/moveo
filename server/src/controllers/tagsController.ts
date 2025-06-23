@@ -37,7 +37,7 @@ export const getTagsController = async (req: Request<{},{},{}>, res: Response): 
     }
 }
 
-export const updateTagController = async (req: Request<UpdateTagParams,{},CreateTagRequest>, res: Response): Promise<void> => {
+export const updateTagController = async (req: Request, res: Response): Promise<void> => {
         const { id } = req.params;
         const { name } = req.body;
 
