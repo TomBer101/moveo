@@ -6,30 +6,21 @@ import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
 import UserPage from './pages/UserPage';
 import UnauthorizedPage from './pages/Unauthorized';
+import { useAppDispatch } from './app/hooks';
+import { fetchTags } from './features/tags/tagsSlice';
+import { useEffect } from 'react';
 import './App.css'
+import { fetchTasks } from './features/tasks/tasksSlice';
 
-// const router = createBrowserRouter([
-//   {
-//     path: '/',
-//     element: <LoginPage />,
-//   },
-//   {
-//     path: 'admin',
-//     element:
-//     <ProtectedRoute>
-//       <AdminPage /> 
-//     </ProtectedRoute>
-//   },
-//   {
-//     path: 'user',
-//     element:
-//     <ProtectedRoute>
-//       <UserPage />
-//     </ProtectedRoute>
-//   }
-// ]);
 
 function App() {
+  const dispatch = useAppDispatch();
+
+
+  useEffect(() => {
+    dispatch(fetchTags());
+    dispatch(fetchTasks());
+  }, [dispatch]);
 
   return (
     <Router>
