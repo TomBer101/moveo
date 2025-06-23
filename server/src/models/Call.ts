@@ -19,6 +19,13 @@ const callSchema = new Schema<ICall>({
     tags: [{
         type: Schema.Types.ObjectId,
         ref: 'Tag',
+        validate: {
+            validator: async function(v: Types.ObjectId) {
+                const tag = await mongoose.model('Tag').findById(v);
+                return tag !== null;
+            },
+            message: 'Invalid tag ID'
+        }
         }]
 });
 

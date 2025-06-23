@@ -34,4 +34,7 @@ export const CallTaskSchema = new Schema<ICallTask>({
     _id: true
 });
 
+// Index for efficient queries
+CallTaskSchema.index({ suggestedTaskId: 1 });
+
 
