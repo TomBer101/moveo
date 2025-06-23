@@ -6,11 +6,10 @@ const router = Router();
 
 // Apply authentication and admin role requirement to all tag routes
 router.use(requireAuth);
-router.use(authorizedRoles('admin'));
 
-router.post('/', createTagController);
+router.post('/', authorizedRoles('admin'), createTagController);
 router.get('/', getTagsController);
-router.put('/:id', updateTagController);
+router.put('/:id', authorizedRoles('admin'), updateTagController);
 
 export default router;
 
