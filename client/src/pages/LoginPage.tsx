@@ -17,17 +17,22 @@ interface LoginFormData {
 
 
 export default function LoginPage() {
-    const { login, user, isAuthenticated } = useAuth();
+    const { login, user } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
-    const { control, handleSubmit} = useForm<LoginFormData>();
+    const { control, handleSubmit} = useForm<LoginFormData>({
+        defaultValues: {
+            name: '',
+            password: ''
+        }
+    });
 
     useEffect(() => {
-        if (isAuthenticated && user) {
+        if (user) {
             const redirectPath = getRoleBasedRedirect(user.role);
             navigate(redirectPath);
         }
-    }, [user, navigate, isAuthenticated]);
+    }, [user, navigate]);
 
     const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
         console.log(data);
@@ -40,15 +45,24 @@ export default function LoginPage() {
     };
 
     return (
-        <Box>
+        <Box sx={{
+            width: '40%',
+            margin: 'auto',
+
+        }}>
             <Typography variant="h4">Login</Typography>
             {error && <Typography color="error">{error}</Typography>}
-            <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1,            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 4 }}>
                 <FormInputText
                     name="name"
                     control={control}
                     label="Name"
                     rules={{ required: 'Name is required' }}
+
                 />
                 <FormInputText
                     name="password"
