@@ -14,6 +14,7 @@ export const getTags = async (): Promise<ITag[]> => {
     }
 }
 
+
 export const createTag = async (name: string): Promise<ITag> => {
     try {
         const response = await apiClient.post<ITag>('/tags', { name });
