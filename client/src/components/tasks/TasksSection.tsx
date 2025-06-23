@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import type { ITask } from '../../types';
 import Task from './Task';

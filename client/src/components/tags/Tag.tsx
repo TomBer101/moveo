@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import type { ITag } from '../../types';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';

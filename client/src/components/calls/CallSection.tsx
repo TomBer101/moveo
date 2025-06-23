@@ -1,6 +1,3 @@
-import React from 'react';
-
-
 import TagsSection from '../tags/TagsSection';
 import TasksSection from '../tasks/TasksSection';
 import type { ICall } from '../../types/index';
