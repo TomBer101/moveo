@@ -16,8 +16,3 @@ export const login = async (data: LoginData) => {
     }
 
 }
-
-// export const register = async (data: RegisterData) => {
-//     const response = await apiClient.post<IRegisterResponse>('/register', data);
-//     return response;
-// }
