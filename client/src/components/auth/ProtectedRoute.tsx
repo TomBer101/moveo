@@ -8,10 +8,10 @@ interface ProtectedRouteProps {
     fallbackPath?: string;
 }
 
-const ProtectedRoute = ({ children, requiredRole, fallbackPath = '/login' }: ProtectedRouteProps) => {
-    const { user, isAuthenticated } = useAuth();
+const ProtectedRoute = ({ children, requiredRole, fallbackPath = '/' }: ProtectedRouteProps) => {
+    const { user } = useAuth();
 
-    if (!isAuthenticated) {
+    if (!user) {
         return <Navigate to={fallbackPath} replace />;
     }
 
